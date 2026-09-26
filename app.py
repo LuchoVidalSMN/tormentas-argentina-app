@@ -105,7 +105,7 @@ def graficar_mapa_argentina(lons, lats, thCounts, fecha_str) :
 # st.title("⚡ Horas de Tormenta en Argentina")
 # st.markdown("Visualizador de datos del repositorio global de **Earth Networks**.")
 
-st.title('<h1 style="margin-top: -12px; color: #242C4F; ">⚡ Horas de Tormenta en Argentina | Dashboard Interactivo</h1>', unsafe_allow_html=True)
+st.markdown('<h1 style="margin-top: -12px; color: #242C4F; ">⚡ Horas de Tormenta en Argentina | Dashboard Interactivo</h1>', unsafe_allow_html=True)
 st.markdown('<p style="font-size: 20px; color: #0090D0; ">Dirección de Productos de Modelación Ambiental y de Sensores Remotos - DNCIPS</p>', unsafe_allow_html=True)
 
 
