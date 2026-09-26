@@ -37,16 +37,26 @@ st.image("smn_horizontal_arg-01.jpg", width=400) # Ajusta el ancho según prefie
 @st.cache_data(show_spinner=False)
 def descargar_datos(fecha_str, anio) :
     
-    """Descarga el archivo HDF5 solo si no está en caché."""
+    """Descarga el archivo HDF5 simulando ser un navegador web para evitar bloqueos."""
     
     url = f"http://thunderhours.earthnetworks.com/data/{anio}/thunderhours_{fecha_str}.hdf5"
     archivo_local = f"thunderhours_{fecha_str}.hdf5"
     
     if not os.path.exists(archivo_local):
         try:
-            urllib.request.urlretrieve(url, archivo_local)
+            # Creamos una petición con un User-Agent falso (simulando Google Chrome en Windows)
+            req = urllib.request.Request(
+                url, 
+                headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
+            )
+            
+            # Abrimos la URL con un límite de tiempo (timeout) y guardamos el archivo
+            with urllib.request.urlopen(req, timeout=15) as respuesta, open(archivo_local, 'wb') as archivo_salida:
+                archivo_salida.write(respuesta.read())
+                
         except Exception as e:
             return None, str(e)
+            
     return archivo_local, None
 
 # =========================================================================== #
