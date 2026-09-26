@@ -89,7 +89,7 @@ def graficar_mapa_argentina(lons, lats, thCounts, fecha_str) :
     
     """Genera la figura de Matplotlib/Cartopy centrada en Argentina."""
     
-    fig = plt.figure(figsize=(8, 12))
+    fig = plt.figure(figsize=(6, 10))
     ax = fig.add_subplot(1, 1, 1, projection=ccrs.PlateCarree())
     
     # Límites aproximados de Argentina
@@ -99,7 +99,7 @@ def graficar_mapa_argentina(lons, lats, thCounts, fecha_str) :
     thCounts_grafico = np.where(thCounts == 0, np.nan, thCounts)
     
     # 1. Crear un mapa de colores discreto de exactamente 24 colores
-    cmap_discreto = plt.get_cmap('turbo', 24)
+    cmap_discreto = plt.get_cmap('gist_ncar', 24)
     
     # 2. Definir los límites de cada bloque de color (de 0 a 24, saltando de 1 en 1)
     norm = mcolors.BoundaryNorm(np.arange(0, 25), cmap_discreto.N)
@@ -113,7 +113,7 @@ def graficar_mapa_argentina(lons, lats, thCounts, fecha_str) :
     # Capas cartográficas
     ax.add_feature(cfeature.BORDERS, linewidth=1.5, edgecolor='black')
     ax.add_feature(cfeature.COASTLINE, linewidth=1.0, edgecolor='black')
-    ax.add_feature(cfeature.STATES, linewidth=0.5, edgecolor='gray', linestyle=':')
+    ax.add_feature(cfeature.STATES, linewidth=0.5, edgecolor='gray')
     
     # 3. Configurar la barra de color con marcas (ticks) cada 2 horas arrancando de 0
     marcas_colorbar = np.arange(0, 25, 2)
@@ -133,7 +133,7 @@ def graficar_mapa_argentina(lons, lats, thCounts, fecha_str) :
 # st.title("⚡ Horas de Tormenta en Argentina")
 # st.markdown("Visualizador de datos del repositorio global de **Earth Networks**.")
 
-st.markdown('<h1 style="margin-top: -12px; color: #242C4F; ">⚡ Horas de Tormenta en Argentina | Dashboard Interactivo</h1>', unsafe_allow_html=True)
+st.markdown('<h1 style="margin-top: -12px; color: #242C4F; ">⛈️ Horas de Tormenta en Argentina | Dashboard Interactivo</h1>', unsafe_allow_html=True)
 st.markdown('<p style="font-size: 20px; color: #0090D0; ">Dirección de Productos de Modelación Ambiental y de Sensores Remotos - DNCIPS</p>', unsafe_allow_html=True)
 
 
