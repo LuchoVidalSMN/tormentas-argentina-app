@@ -88,15 +88,20 @@ def graficar_mapa_argentina(lons, lats, thCounts, fecha_str) :
     
     """Genera la figura de Matplotlib/Cartopy centrada en Argentina."""
     
-    fig = plt.figure(figsize=(8, 12))
+    fig = plt.figure(figsize=(6, 10))
     ax = fig.add_subplot(1, 1, 1, projection=ccrs.PlateCarree())
     
     # Límites aproximados de Argentina
-    ax.set_extent([-74.0, -53.0, -55.0, -21.0], crs=ccrs.PlateCarree())
+    ax.set_extent([-74.0, -53.0, -56.0, -21.0], crs=ccrs.PlateCarree())
     
+    # Reemplazar los valores 0 por np.nan para que sean transparentes
+    thCounts_grafico = np.where(thCounts == 0, np.nan, thCounts)
+    
+    # Generar el mapa con paleta estilo radar ('turbo', 'jet' o 'nipy_spectral')
+    # Fijamos vmin=1 y vmax=24 para que la barra de colores sea estable todos los días
     img = ax.pcolormesh(
-                        lons, lats, thCounts, 
-                        cmap='Reds', vmin=0, transform=ccrs.PlateCarree()
+                        lons, lats, thCounts_grafico, 
+                        cmap='turbo', vmin=1, vmax=24, transform=ccrs.PlateCarree()
                        )
     
     # Capas cartográficas
