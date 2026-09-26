@@ -17,6 +17,7 @@ from pathlib import Path
 import streamlit as st
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
+import matplotlib.colors as mcolors
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 
@@ -88,7 +89,7 @@ def graficar_mapa_argentina(lons, lats, thCounts, fecha_str) :
     
     """Genera la figura de Matplotlib/Cartopy centrada en Argentina."""
     
-    fig = plt.figure(figsize=(6, 10))
+    fig = plt.figure(figsize=(8, 12))
     ax = fig.add_subplot(1, 1, 1, projection=ccrs.PlateCarree())
     
     # Límites aproximados de Argentina
@@ -97,11 +98,16 @@ def graficar_mapa_argentina(lons, lats, thCounts, fecha_str) :
     # Reemplazar los valores 0 por np.nan para que sean transparentes
     thCounts_grafico = np.where(thCounts == 0, np.nan, thCounts)
     
-    # Generar el mapa con paleta estilo radar ('turbo', 'jet' o 'nipy_spectral')
-    # Fijamos vmin=1 y vmax=24 para que la barra de colores sea estable todos los días
+    # 1. Crear un mapa de colores discreto de exactamente 24 colores
+    cmap_discreto = plt.get_cmap('turbo', 24)
+    
+    # 2. Definir los límites de cada bloque de color (de 0 a 24, saltando de 1 en 1)
+    norm = mcolors.BoundaryNorm(np.arange(0, 25), cmap_discreto.N)
+    
+    # Generar el mapa usando el colormap discreto y la normalización
     img = ax.pcolormesh(
                         lons, lats, thCounts_grafico, 
-                        cmap='turbo', vmin=1, vmax=24, transform=ccrs.PlateCarree()
+                        cmap=cmap_discreto, norm=norm, transform=ccrs.PlateCarree()
                        )
     
     # Capas cartográficas
@@ -109,7 +115,14 @@ def graficar_mapa_argentina(lons, lats, thCounts, fecha_str) :
     ax.add_feature(cfeature.COASTLINE, linewidth=1.0, edgecolor='black')
     ax.add_feature(cfeature.STATES, linewidth=0.5, edgecolor='gray', linestyle=':')
     
-    plt.colorbar(img, pad=0.02, aspect=40, shrink=0.6, label='Horas Acumuladas con Tormenta')
+    # 3. Configurar la barra de color con marcas (ticks) cada 2 horas arrancando de 0
+    marcas_colorbar = np.arange(0, 25, 2)
+    cbar = plt.colorbar(
+                        img, pad=0.02, aspect=40, shrink=0.6, 
+                        label='Horas Acumuladas con Tormenta',
+                        ticks=marcas_colorbar
+                       )
+    
     plt.title(f'Horas de Tormenta en Argentina - {fecha_str}', fontsize=12)
     
     return fig
