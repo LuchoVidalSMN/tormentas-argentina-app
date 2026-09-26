@@ -6,22 +6,39 @@ Created on Sat Sep 26 18:21:48 2026
 @author: lucho
 """
 
+# =========================================================================== #
+
 import os
+import Path
 import h5py
 import datetime
 import numpy as np
 import urllib.request
 import streamlit as st
 import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 
+logo_path = Path('./smn_logo.png')
+smn_logo = mpimg.imread(logo_path) if logo_path.exists() else None
+
+# =========================================================================== #
+
 # Configuración inicial de la página
-st.set_page_config(page_title="Monitor de Tormentas - Argentina", layout="centered")
+st.set_page_config(
+                   page_title="Monitor de Tormentas ENGLN - Argentina", 
+                   layout="wide"
+                  )
+st.image("smn_horizontal_arg-01.jpg", width=400) # Ajusta el ancho según prefieras
+
+# =========================================================================== #
 
 @st.cache_data(show_spinner=False)
-def descargar_datos(fecha_str, anio):
+def descargar_datos(fecha_str, anio) :
+    
     """Descarga el archivo HDF5 solo si no está en caché."""
+    
     url = f"http://thunderhours.earthnetworks.com/data/{anio}/thunderhours_{fecha_str}.hdf5"
     archivo_local = f"thunderhours_{fecha_str}.hdf5"
     
@@ -32,9 +49,13 @@ def descargar_datos(fecha_str, anio):
             return None, str(e)
     return archivo_local, None
 
+# =========================================================================== #
+
 @st.cache_data(show_spinner=False)
-def procesar_datos(archivo_local):
+def procesar_datos(archivo_local) :
+    
     """Abre el archivo HDF5, extrae coordenadas y suma las 24 matrices horarias."""
+    
     try:
         f = h5py.File(archivo_local, 'r')
         lats = f.attrs['edges_latitude']
@@ -51,8 +72,12 @@ def procesar_datos(archivo_local):
     except Exception as e:
         return None, None, None, str(e)
 
-def graficar_mapa_argentina(lons, lats, thCounts, fecha_str):
+# =========================================================================== #
+
+def graficar_mapa_argentina(lons, lats, thCounts, fecha_str) :
+    
     """Genera la figura de Matplotlib/Cartopy centrada en Argentina."""
+    
     fig = plt.figure(figsize=(8, 12))
     ax = fig.add_subplot(1, 1, 1, projection=ccrs.PlateCarree())
     
@@ -74,9 +99,15 @@ def graficar_mapa_argentina(lons, lats, thCounts, fecha_str):
     
     return fig
 
+# =========================================================================== #
+
 # --- Interfaz de Streamlit ---
-st.title("⚡ Horas de Tormenta en Argentina")
-st.markdown("Visualizador de datos del repositorio global de **Earth Networks**.")
+# st.title("⚡ Horas de Tormenta en Argentina")
+# st.markdown("Visualizador de datos del repositorio global de **Earth Networks**.")
+
+st.title('<h1 style="margin-top: -12px; color: #242C4F; ">⚡ Horas de Tormenta en Argentina | Dashboard Interactivo</h1>', unsafe_allow_html=True)
+st.markdown('<p style="font-size: 20px; color: #0090D0; ">Dirección de Productos de Modelación Ambiental y de Sensores Remotos - DNCIPS</p>', unsafe_allow_html=True)
+
 
 # Selector de fecha
 fecha_seleccionada = st.date_input(
@@ -117,3 +148,5 @@ if st.button("Generar Mapa") :
                     st.info("No se registraron horas con tormenta a nivel global para esta fecha.")
                 else :
                     st.success(f"Mapa generado con éxito. El valor máximo detectado globalmente fue de {max_horas} horas de tormenta.")
+                    
+# =========================================================================== #
